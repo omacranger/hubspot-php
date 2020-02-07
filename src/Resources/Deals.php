@@ -10,7 +10,7 @@ class Deals extends Resource
     /**
      * Create a deal.
      *
-     * @see https://developers.hubspot.com/docs/methods/deals/create_deal
+     * @see https://developers.hubspot.com/docs-beta/crm/deals
      *
      * @param array $deal array of deal properties
      *
@@ -18,15 +18,31 @@ class Deals extends Resource
      */
     public function create(array $deal)
     {
-        $endpoint = 'https://api.hubapi.com/deals/v1/deal';
+        $endpoint = 'https://api.hubapi.com/crm/v3/objects/deals';
 
         return $this->client->request('post', $endpoint, ['json' => $deal]);
     }
 
+	/**
+	 * Batch create deals.
+	 *
+	 * @see https://developers.hubspot.com/docs-beta/crm/deals
+	 *
+	 * @param array $deals the deals and properties
+	 *
+	 * @return \SevenShores\Hubspot\Http\Response
+	 */
+	public function createBatch(array $deals)
+	{
+		$endpoint = 'https://api.hubapi.com/crm/v3/objects/deals/batch/create';
+
+		return $this->client->request('post', $endpoint, ['json' => $deals]);
+	}
+
     /**
      * Update a Deal.
      *
-     * @see https://developers.hubspot.com/docs/methods/deals/update_deal
+     * @see https://developers.hubspot.com/docs-beta/crm/deals
      *
      * @param int   $id   the deal id
      * @param array $deal the deal properties to update
@@ -35,15 +51,15 @@ class Deals extends Resource
      */
     public function update($id, array $deal)
     {
-        $endpoint = "https://api.hubapi.com/deals/v1/deal/{$id}";
+        $endpoint = "https://api.hubapi.com/crm/v3/objects/deals/{$id}";
 
-        return $this->client->request('put', $endpoint, ['json' => $deal]);
+        return $this->client->request('patch', $endpoint, ['json' => $deal]);
     }
 
     /**
      * Update a group of existing deal records by their dealId.
      *
-     * @see https://developers.hubspot.com/docs/methods/deals/batch-update-deals
+     * @see https://developers.hubspot.com/docs-beta/crm/deals
      *
      * @param array $deals the deals and properties
      *
@@ -51,7 +67,7 @@ class Deals extends Resource
      */
     public function updateBatch(array $deals)
     {
-        $endpoint = 'https://api.hubapi.com/deals/v1/batch-async/update';
+        $endpoint = 'https://api.hubapi.com/crm/v3/objects/deals/batch/update';
 
         return $this->client->request('post', $endpoint, ['json' => $deals]);
     }
@@ -67,7 +83,7 @@ class Deals extends Resource
      */
     public function all(array $params = [])
     {
-        $endpoint = 'https://api.hubapi.com/deals/v1/deal/paged';
+        $endpoint = 'https://api.hubapi.com/crm/v3/objects/deals';
 
         return $this->client->request(
             'get',
@@ -118,7 +134,7 @@ class Deals extends Resource
     /**
      * Delete a Deal.
      *
-     * @see https://developers.hubspot.com/docs/methods/deals/delete_deal
+     * @see https://developers.hubspot.com/docs-beta/crm/deals
      *
      * @param int $id
      *
@@ -126,7 +142,7 @@ class Deals extends Resource
      */
     public function delete($id)
     {
-        $endpoint = "https://api.hubapi.com/deals/v1/deal/{$id}";
+        $endpoint = "https://api.hubapi.com/crm/v3/objects/deals/{$id}";
 
         return $this->client->request('delete', $endpoint);
     }
@@ -142,7 +158,7 @@ class Deals extends Resource
      */
     public function getById($id)
     {
-        $endpoint = "https://api.hubapi.com/deals/v1/deal/{$id}";
+        $endpoint = "https://api.hubapi.com/crm/v3/objects/deals/{$id}";
 
         return $this->client->request('get', $endpoint);
     }
