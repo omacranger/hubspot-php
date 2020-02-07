@@ -9,17 +9,33 @@ class Companies extends Resource
      *
      * @param array $properties array of company properties
      *
-     * @see https://developers.hubspot.com/docs/methods/companies/create_company
+     * @see https://developers.hubspot.com/docs-beta/crm/companies
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
     public function create(array $properties)
     {
-        $endpoint = 'https://api.hubapi.com/companies/v2/companies/';
+        $endpoint = 'https://api.hubapi.com/crm/v3/objects/companies';
         $options['json'] = ['properties' => $properties];
 
         return $this->client->request('post', $endpoint, $options);
     }
+
+	/**
+	 * Create multiple companies.
+	 * @see https://developers.hubspot.com/docs-beta/crm/companies
+	 *
+	 * @param array $companies the companies and properties
+	 *
+	 * @return \SevenShores\Hubspot\Http\Response
+	 */
+	public function createBatch( array $companies )
+	{
+		$endpoint        = 'https://api.hubapi.com/crm/v3/objects/companies/batch/create';
+		$options['json'] = $companies;
+
+		return $this->client->request( 'post', $endpoint, $options );
+	}
 
     /**
      * Updates a company.
@@ -27,59 +43,75 @@ class Companies extends Resource
      * @param int   $id         the company id
      * @param array $properties the company properties to update
      *
-     * @see https://developers.hubspot.com/docs/methods/companies/update_company
+     * @see https://developers.hubspot.com/docs-beta/crm/companies
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
     public function update($id, array $properties)
     {
-        $endpoint = "https://api.hubapi.com/companies/v2/companies/{$id}";
+        $endpoint = "https://api.hubapi.com/crm/v3/objects/companies/{$id}";
         $options['json'] = ['properties' => $properties];
 
         return $this->client->request('put', $endpoint, $options);
     }
 
     /**
+     * @see https://developers.hubspot.com/docs-beta/crm/companies
+     *
      * @param array $companies the companies and properties
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
     public function updateBatch(array $companies)
     {
-        $endpoint = 'https://api.hubapi.com/companies/v1/batch-async/update';
+        $endpoint = 'https://api.hubapi.com/crm/v3/objects/companies/batch/update';
         $options['json'] = $companies;
 
         return $this->client->request('post', $endpoint, $options);
     }
 
+	/**
+	 * Archive a company.
+	 *
+	 * @see https://developers.hubspot.com/docs-beta/crm/companies
+	 *
+	 * @param $id
+	 *
+	 * @return \SevenShores\Hubspot\Http\Response
+	 */
+	public function archive($id)
+	{
+		$endpoint = "https://api.hubapi.com/crm/v3/objects/companies/{$id}";
+
+		return $this->client->request('delete', $endpoint);
+	}
+
     /**
-     * Deletes a company.
+     * Archives a company.
+     *
+     * @deprecated See 'archive'
      *
      * @param int $id The company id
-     *
-     * @see https://developers.hubspot.com/docs/methods/companies/delete_company
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
     public function delete($id)
     {
-        $endpoint = "https://api.hubapi.com/companies/v2/companies/{$id}";
-
-        return $this->client->request('delete', $endpoint);
+        return $this->archive($id);
     }
 
     /**
      * Returns all companies.
      *
-     * @param array $params Array of optional parameters ['limit', 'offset', 'properties']
+     * @param array $params Array of optional parameters ['limit', 'after', 'properties', 'associations', 'archived']
      *
-     * @see https://developers.hubspot.com/docs/methods/companies/get-all-companies
+     * @see https://developers.hubspot.com/docs-beta/crm/companies
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
     public function all(array $params = [])
     {
-        $endpoint = 'https://api.hubapi.com/companies/v2/companies/paged';
+        $endpoint = 'https://api.hubapi.com/crm/v3/objects/companies';
 
         $queryString = build_query_string($params);
 
@@ -153,13 +185,13 @@ class Companies extends Resource
      *
      * @param int $id
      *
-     * @see https://developers.hubspot.com/docs/methods/companies/get_company
+     * @see https://developers.hubspot.com/docs-beta/crm/companies
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
     public function getById($id)
     {
-        $endpoint = "https://api.hubapi.com/companies/v2/companies/{$id}";
+        $endpoint = "https://api.hubapi.com/crm/v3/objects/companies/{$id}";
 
         return $this->client->request('get', $endpoint);
     }
