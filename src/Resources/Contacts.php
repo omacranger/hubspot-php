@@ -14,11 +14,11 @@ class Contacts extends Resource
      *
      * @return \SevenShores\Hubspot\Http\Response
      *
-     * @see https://developers.hubspot.com/docs/methods/contacts/create_contact
+     * @see https://developers.hubspot.com/docs-beta/crm/contacts
      */
     public function create(array $properties)
     {
-        $endpoint = 'https://api.hubapi.com/contacts/v1/contact';
+        $endpoint = 'https://api.hubapi.com/crm/v3/objects/contacts';
 
         return $this->client->request(
             'post',
@@ -26,6 +26,22 @@ class Contacts extends Resource
             ['json' => ['properties' => $properties]]
         );
     }
+
+	/**
+	 * Batch create contacts.
+	 *
+	 * @see https://developers.hubspot.com/docs-beta/crm/contacts
+	 *
+	 * @param array $contacts the contacts and properties
+	 *
+	 * @return \SevenShores\Hubspot\Http\Response
+	 */
+	public function createBatch(array $contacts)
+	{
+		$endpoint = 'https://api.hubapi.com/crm/v3/objects/contacts/batch/create';
+
+		return $this->client->request('post', $endpoint, ['json' => $contacts]);
+	}
 
     /**
      * Update an existing contact.
@@ -35,18 +51,34 @@ class Contacts extends Resource
      *
      * @return \SevenShores\Hubspot\Http\Response
      *
-     * @see https://developers.hubspot.com/docs/methods/contacts/update_contact
+     * @see https://developers.hubspot.com/docs-beta/crm/contacts
      */
     public function update($id, array $properties)
     {
-        $endpoint = "https://api.hubapi.com/contacts/v1/contact/vid/{$id}/profile";
+        $endpoint = "https://api.hubapi.com/crm/v3/objects/contacts/{$id}";
 
         return $this->client->request(
-            'post',
+            'patch',
             $endpoint,
             ['json' => ['properties' => $properties]]
         );
     }
+
+	/**
+	 * Update a group of existing contact records by their contactId.
+	 *
+	 * @see https://developers.hubspot.com/docs-beta/crm/deals
+	 *
+	 * @param array $contacts the contacts and properties
+	 *
+	 * @return \SevenShores\Hubspot\Http\Response
+	 */
+	public function updateBatch(array $contacts)
+	{
+		$endpoint = 'https://api.hubapi.com/crm/v3/objects/contacts/batch/update';
+
+		return $this->client->request('post', $endpoint, ['json' => $contacts]);
+	}
 
     /**
      * Update an existing contact by email.
@@ -112,20 +144,35 @@ class Contacts extends Resource
         );
     }
 
+	/**
+	 * Archive a contact.
+	 *
+	 * @param int $id
+	 *
+	 * @return \SevenShores\Hubspot\Http\Response
+	 *
+	 * @see https://developers.hubspot.com/docs-beta/crm/contacts
+	 */
+	public function archive($id)
+	{
+		$endpoint = "https://api.hubapi.com/crm/v3/objects/contacts/{$id}";
+
+		return $this->client->request('delete', $endpoint);
+	}
+
     /**
      * Delete a contact.
      *
+     * @deprecated See 'archive' instead.
      * @param int $id
      *
      * @return \SevenShores\Hubspot\Http\Response
      *
-     * @see https://developers.hubspot.com/docs/methods/contacts/delete_contact
+     * @see https://developers.hubspot.com/docs-beta/crm/contacts
      */
     public function delete($id)
     {
-        $endpoint = "https://api.hubapi.com/contacts/v1/contact/vid/{$id}";
-
-        return $this->client->request('delete', $endpoint);
+        return $this->archive($id);
     }
 
     /**
@@ -133,20 +180,15 @@ class Contacts extends Resource
      *
      * A paginated list of contacts will be returned to you, with a maximum of 100 contacts per page.
      *
-     * Please Note: There are 2 fields here to pay close attention to: the "has-more" field that will let you know
-     * whether there are more contacts that you can pull from this portal, and the "vid-offset" field which will let
-     * you know where you are in the list of contacts. You can then use the "vid-offset" field in the "vidOffset"
-     * parameter described below.
+     * @see https://developers.hubspot.com/docs-beta/crm/contacts
      *
-     * @see https://developers.hubspot.com/docs/methods/contacts/get_contacts
-     *
-     * @param array $params Array of optional parameters ['count', 'property', 'vidOffset']
+     * @param array $params Array of optional parameters ['limit', 'after', 'properties', 'associations', 'archived']
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
     public function all(array $params = [])
     {
-        $endpoint = 'https://api.hubapi.com/contacts/v1/lists/all/contacts/all';
+        $endpoint = 'https://api.hubapi.com/crm/v3/objects/contacts';
 
         return $this->client->request(
             'get',
@@ -205,19 +247,18 @@ class Contacts extends Resource
     }
 
     /**
-     * Get a contact by vid(id).
+     * Get a contact by id
      *
      * @param int   $id
-     * @param array $params Array of optional parameters ['property', 'propertyMode', 'formSubmissionMode',
-     *                      'showListMemberships']
+     * @param array $params Array of optional parameters ['properties' 'associations', 'archived']
      *
      * @return \SevenShores\Hubspot\Http\Response
      *
-     * @see https://developers.hubspot.com/docs/methods/contacts/get_contact
+     * @see https://developers.hubspot.com/docs-beta/crm/contacts
      */
     public function getById($id, array $params = [])
     {
-        $endpoint = "https://api.hubapi.com/contacts/v1/contact/vid/{$id}/profile";
+        $endpoint = "https://api.hubapi.com/crm/v3/objects/contacts/{$id}";
 
         return $this->client->request(
             'get',
@@ -234,19 +275,20 @@ class Contacts extends Resource
      * This method will also return you much of the HubSpot lead "intelligence" for each requested contact record. The
      * endpoint accepts many query parameters that allow for customization based on a variety of integration use cases.
      *
-     * @see https://developers.hubspot.com/docs/methods/contacts/get_batch_by_vid
+     * @see https://developers.hubspot.com/docs-beta/crm/contacts
      *
-     * @param array $vids   Array of visitor IDs
-     * @param array $params Array of optional parameters ['property', 'propertyMode', 'formSubmissionMode',
-     *                      'showListMemberships', 'includeDeletes']
+     * @param array $ids   Array of visitor IDs
+     * @param array $params Array of optional parameters ['properties', 'archived']
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
-    public function getBatchByIds(array $vids, array $params = [])
+    public function getBatchByIds(array $ids, array $params = [])
     {
-        $endpoint = 'https://api.hubapi.com/contacts/v1/contact/vids/batch/';
+        $endpoint = 'https://api.hubapi.com/crm/v3/objects/contacts/batch/read';
 
-        $params['vid'] = $vids;
+	    $params['inputs'] = array_map( function ( $id ) {
+		    return [ 'id' => $id ];
+	    }, $ids );
 
         return $this->client->request(
             'get',
