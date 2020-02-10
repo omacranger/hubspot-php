@@ -51,9 +51,10 @@ class Deals extends Resource
      */
     public function update($id, array $deal)
     {
-        $endpoint = "https://api.hubapi.com/crm/v3/objects/deals/{$id}";
+	    $endpoint        = "https://api.hubapi.com/crm/v3/objects/deals/{$id}";
+	    $options['json'] = [ 'properties' => $deal ];
 
-        return $this->client->request('patch', $endpoint, ['json' => $deal]);
+	    return $this->client->request( 'patch', $endpoint, $options);
     }
 
     /**

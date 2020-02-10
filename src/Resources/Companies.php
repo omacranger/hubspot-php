@@ -52,7 +52,7 @@ class Companies extends Resource
         $endpoint = "https://api.hubapi.com/crm/v3/objects/companies/{$id}";
         $options['json'] = ['properties' => $properties];
 
-        return $this->client->request('put', $endpoint, $options);
+        return $this->client->request('patch', $endpoint, $options);
     }
 
     /**
