@@ -154,15 +154,21 @@ class Deals extends Resource
      * @see https://developers.hubspot.com/docs/methods/deals/get_deal
      *
      * @param int $id
+     * @param array $params Array of optional parameters ['properties', 'associations', 'archived']
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
-    public function getById($id)
-    {
-        $endpoint = "https://api.hubapi.com/crm/v3/objects/deals/{$id}";
+	public function getById($id, array $params)
+	{
+		$endpoint = "https://api.hubapi.com/crm/v3/objects/deals/{$id}";
 
-        return $this->client->request('get', $endpoint);
-    }
+		return $this->client->request(
+			'get',
+			$endpoint,
+			[],
+			build_query_string($params)
+		);
+	}
 
     /**
      * Associate a deal with a company.
