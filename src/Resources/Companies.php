@@ -184,16 +184,22 @@ class Companies extends Resource
      * Returns a company with id $id.
      *
      * @param int $id
+     * @param array $params Array of optional parameters ['properties' 'associations', 'archived']
      *
      * @see https://developers.hubspot.com/docs-beta/crm/companies
      *
      * @return \SevenShores\Hubspot\Http\Response
      */
-    public function getById($id)
+    public function getById($id,  array $params = [])
     {
         $endpoint = "https://api.hubapi.com/crm/v3/objects/companies/{$id}";
 
-        return $this->client->request('get', $endpoint);
+	    return $this->client->request(
+		    'get',
+		    $endpoint,
+		    [],
+		    build_query_string($params)
+	    );
     }
 
     /**
